@@ -31,11 +31,22 @@ const [currentPage,setCurrentPage]=useState(1)
     
   }
  
+  const handlerAddLaunchesButton=()=>{
+    const newPage = currentPage + 1;
+    handlerToDownLoadLauncher(newPage)
+    .then((response)=>{
+      setLaunches((prev)=>{
+        return [...prev,...response.data.docs]
+      })
+    })
+    setCurrentPage(newPage)
+  }
 
   
   return (
     <div className="App">
       <List launches={launches} />
+      <button onClick={handlerAddLaunchesButton}>Add More</button>
     </div>
   );
 }
