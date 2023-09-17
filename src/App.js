@@ -7,6 +7,7 @@ function App() {
   const [totalPagesAmount, setTotalPagesAmount] = useState(1);
   const [launches, setLaunches] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filteredByName,setFilteredByName]=useState('')
 
   useEffect(() => {
     handlerToDownLoadLauncher(4)
@@ -39,11 +40,16 @@ function App() {
     setCurrentPage(newPage);
   };
 
+
+  const filteredByRocketName=launches.filter((launch)=>{
+    return launch.name.toLowerCase().includes(filteredByName.toLowerCase().trim())
+  })
+  console.log(filteredByRocketName);
   return (
     <div className="App">
       <div>
         <label> Name
-          <input />
+          <input  value={filteredByName} onChange={(e)=>setFilteredByName(e.target.value)}/>
         </label>
         <label>Flight Number
           <input />
@@ -52,7 +58,7 @@ function App() {
           <input />
         </label>
       </div>
-      <List launches={launches} />
+      <List launches={launches} byName={filteredByName} />
       <button onClick={handlerAddLaunchesButton}>Add More</button>
     </div>
   );
