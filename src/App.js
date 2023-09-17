@@ -1,22 +1,37 @@
-import logo from "./logo.svg";
 import "./App.css";
 import List from "./components/List";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 function App() {
+const [totalPagesAmount,setTotalPagesAmount]=useState(1);
+const [launches,setLaunches]=useState([]);
+const [currentPage,setCurrentPage]=useState(1)
+
+  useEffect(()=>{
+    handlerToDownLoadLauncher(4)  
+    .then((response)=>{
+     setLaunches(response.data.docs);
+     setTotalPagesAmount(response.data.totalPages)
+     setCurrentPage(response.data.page)
+
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+  },[])
 
   const handlerToDownLoadLauncher=(page)=>{
-    axios.post('https://api.spacexdata.com/v5/launches/query',{
+   return axios.post('https://api.spacexdata.com/v5/launches/query',{
       "query": {},
       "options": {
         page
       }
-    }).then((response)=>{
-console.log(response);
     })
+    
   }
-  handlerToDownLoadLauncher(4)
-  const launches=['name','age']
+ 
+
   
   return (
     <div className="App">
