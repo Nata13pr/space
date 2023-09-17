@@ -8,7 +8,8 @@ function App() {
   const [launches, setLaunches] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [name,setName]=useState('');
-  const [flightNumber,setFlightNumber]=useState('')
+  const [flightNumber,setFlightNumber]=useState('');
+  const [date,setDate]=useState('')
 
   useEffect(() => {
     handlerToDownLoadLauncher(4)
@@ -50,6 +51,11 @@ const filtredByFlightNumber =launches.filter((launch)=>{
   return launch.flight_number===Number(flightNumber);
 })
 
+const filtredByDate=launches.filter((launch)=>{
+  return launch.date_utc.toLowerCase().includes(date.toLowerCase().trim())
+})
+
+console.log(filtredByDate);
   return (
     <div className="App">
       <div>
@@ -60,7 +66,7 @@ const filtredByFlightNumber =launches.filter((launch)=>{
           <input value={flightNumber} onChange={(e)=>setFlightNumber(e.target.value)}/>
         </label>
         <label> Date
-          <input />
+          <input value={date} onChange={(e)=>setDate(e.target.value)}/>
         </label>
       </div>
       <List launches={launches} byName={filtredByName} byFlight={filtredByFlightNumber}/>
