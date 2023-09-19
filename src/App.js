@@ -7,54 +7,76 @@ import {
   setPage,
   setTotalPage,
 } from "./redux/reducers/launches/launchesSlice";
+import { useGetSpaceByNameQuery } from "./redux/spaceApi";
 
 function App() {
+  const page = useSelector((state) => state.launches.page);
+  const lanches = useSelector((state) => state.launches.lanches);
+  const totalPages = useSelector((state) => state.launches.totalPages);
+  const { data, error, isloading } = useGetSpaceByNameQuery(page);
+  console.log(data);
+  console.log(error);
+  console.log(isloading);
   const [name, setName] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
   const [date, setDate] = useState("");
 
-  const page = useSelector((state) => state.launches.page);
-  const lanches = useSelector((state) => state.launches.lanches);
-  const totalPages = useSelector((state) => state.launches.totalPages);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
-    handlerToDownLoadLauncher()
-      .then((response) => {
-        dispatch(addLanches(response.data.docs));
-        dispatch(setTotalPage(response.data.totalPages));
-        dispatch(setPage(response.data.page));
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    if (data) {
+      dispatch(addLanches(data.docs));
+      dispatch(setTotalPage(data.totalPages));
+      dispatch(setPage(data.page));
+    }
   }, []);
 
-  const handlerToDownLoadLauncher = (page) => {
-    return axios.post("https://api.spacexdata.com/v5/launches/query", {
-      " query": {},
-      options: {
-        page,
-        sort: {
-          date_utc: "desc",
-        },
-      },
-    });
-  };
-
-  const handlerAddLaunchesButton = () => {
-    const newPage = page + 1;
-
-    if (newPage > totalPages) {
-      return;
+  useEffect(() => {
+    if (page > 0) {
+      // Ваша логіка тут
+      dispatch(setPage(page)); // Не знаючи вашого коду точно, це лише приклад
     }
-
-    handlerToDownLoadLauncher(newPage).then((response) => {
-      dispatch(addLanches(response.data.docs));
-      dispatch(setPage(newPage));
-    });
+  }, []);
+  const handlerAddLaunchesButton = () => {
+    dispatch(setPage(1));
   };
+
+  // useEffect(() => {
+  //   handlerToDownLoadLauncher()
+  //     .then((response) => {
+  //       dispatch(addLanches(response.data.docs));
+  //       dispatch(setTotalPage(response.data.totalPages));
+  //       dispatch(setPage(response.data.page));
+  //     })
+  //     .catch(function (error) {
+  //       console.log(error);
+  //     });
+  // }, []);
+
+  // const handlerToDownLoadLauncher = (page) => {
+  //   return axios.post("https://api.spacexdata.com/v5/launches/query", {
+  //     " query": {},
+  //     options: {
+  //       page,
+  //       sort: {
+  //         date_utc: "asc",
+  //       },
+  //     },
+  //   });
+  // };
+
+  // const handlerAddLaunchesButton = () => {
+  //   const newPage = page + 1;
+
+  //   if (newPage > totalPages) {
+  //     return;
+  //   }
+
+  //   handlerToDownLoadLauncher(newPage).then((response) => {
+  //     dispatch(addLanches(response.data.docs));
+  //     dispatch(setPage(newPage));
+  //   });
+  // };
 
   const filtredByName = (lanches) => {
     return lanches.filter((launch) => {
@@ -84,7 +106,6 @@ function App() {
     launchesFilteredByName
   );
   const launchesFilteredByDate = filtredByDate(launchesFilteredByFlightNumber);
-
 
   const handleChangeFIlter = (event) => {
     const { name, value } = event.target;

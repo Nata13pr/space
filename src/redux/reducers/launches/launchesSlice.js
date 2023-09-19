@@ -17,7 +17,7 @@ export const launchesSlice = createSlice({
       state.totalPages = action.payload;
     },
     setPage: (state, action) => {
-      state.page = action.payload;
+      state.page += action.payload;
     },
   },
 });
